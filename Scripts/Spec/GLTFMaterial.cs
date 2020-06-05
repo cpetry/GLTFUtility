@@ -52,11 +52,14 @@ namespace Siccity.GLTFUtility {
 			if (normalTexture != null) {
 				en = TryGetTexture(textures, normalTexture, true, tex => {
 					if (tex != null) {
-						mat.SetTexture("_BumpMap", tex);
+						if (mat.HasProperty("_BumpMap")) mat.SetTexture("_BumpMap", tex);
+						if (mat.HasProperty("_NormalMap")) mat.SetTexture("_NormalMap", tex);
 						mat.EnableKeyword("_NORMALMAP");
-						mat.SetFloat("_BumpScale", normalTexture.scale);
+						if (mat.HasProperty("_BumpScale")) mat.SetFloat("_BumpScale", normalTexture.scale);
+						if (mat.HasProperty("_NormalScale")) mat.SetFloat("_NormalScale", normalTexture.scale);
 						if (normalTexture.extensions != null) {
-							normalTexture.extensions.Apply(normalTexture, mat, "_BumpMap");
+							if (mat.HasProperty("_BumpMap")) normalTexture.extensions.Apply(normalTexture, mat, "_BumpMap");
+							if (mat.HasProperty("_NormalMap")) normalTexture.extensions.Apply(normalTexture, mat, "_NormalMap");
 						}
 					}
 				});
@@ -66,9 +69,9 @@ namespace Siccity.GLTFUtility {
 			if (occlusionTexture != null) {
 				en = TryGetTexture(textures, occlusionTexture, true, tex => {
 					if (tex != null) {
-						mat.SetTexture("_OcclusionMap", tex);
+						if (mat.HasProperty("_OcclusionMap")) mat.SetTexture("_OcclusionMap", tex);
 						if (occlusionTexture.extensions != null) {
-							occlusionTexture.extensions.Apply(occlusionTexture, mat, "_OcclusionMap");
+							if (mat.HasProperty("_OcclusionMap")) occlusionTexture.extensions.Apply(occlusionTexture, mat, "_OcclusionMap");
 						}
 					}
 				});
@@ -145,8 +148,9 @@ namespace Siccity.GLTFUtility {
 				// Material
 				Material mat = new Material(sh);
 				mat.color = baseColorFactor;
-				mat.SetFloat("_Metallic", metallicFactor);
-				mat.SetFloat("_Roughness", roughnessFactor);
+				if (mat.HasProperty("_Metallic")) mat.SetFloat("_Metallic", metallicFactor);
+				if (mat.HasProperty("_Roughness")) mat.SetFloat("_Roughness", roughnessFactor);
+				if (mat.HasProperty("_Smoothness")) mat.SetFloat("_Smoothness", 1.0f-roughnessFactor);
 
 				// Assign textures
 				if (textures != null) {
@@ -157,9 +161,11 @@ namespace Siccity.GLTFUtility {
 						} else {
 							IEnumerator en = textures[baseColorTexture.index].GetTextureCached(false, tex => {
 								if (tex != null) {
-									mat.SetTexture("_MainTex", tex);
+									if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+									if (mat.HasProperty("_BaseColorMap")) mat.SetTexture("_BaseColorMap", tex);
 									if (baseColorTexture.extensions != null) {
-										baseColorTexture.extensions.Apply(baseColorTexture, mat, "_MainTex");
+										if (mat.HasProperty("_MainTex")) baseColorTexture.extensions.Apply(baseColorTexture, mat, "_MainTex");
+										if (mat.HasProperty("_BaseColorMap")) baseColorTexture.extensions.Apply(baseColorTexture, mat, "_BaseColorMap");
 									}
 								}
 							});
@@ -173,10 +179,10 @@ namespace Siccity.GLTFUtility {
 						} else {
 							IEnumerator en = TryGetTexture(textures, metallicRoughnessTexture, true, tex => {
 								if (tex != null) {
-									mat.SetTexture("_MetallicGlossMap", tex);
+									if (mat.HasProperty("_MetallicGlossMap")) mat.SetTexture("_MetallicGlossMap", tex);
 									mat.EnableKeyword("_METALLICGLOSSMAP");
 									if (metallicRoughnessTexture.extensions != null) {
-										metallicRoughnessTexture.extensions.Apply(metallicRoughnessTexture, mat, "_MetallicGlossMap");
+										if (mat.HasProperty("_MetallicGlossMap")) metallicRoughnessTexture.extensions.Apply(metallicRoughnessTexture, mat, "_MetallicGlossMap");
 									}
 								}
 							});
@@ -187,7 +193,8 @@ namespace Siccity.GLTFUtility {
 
 				// After the texture and color is extracted from the glTFObject
 				if (mat.HasProperty("_BaseMap")) mat.SetTexture("_BaseMap", mat.mainTexture);
-				if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", baseColorFactor);
+				if (mat.HasProperty("_BaseColorMap")) mat.SetTexture("_BaseColorMap", mat.mainTexture);
+				//if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", baseColorFactor);
 				onFinish(mat);
 			}
 		}
@@ -219,8 +226,8 @@ namespace Siccity.GLTFUtility {
 				// Material
 				Material mat = new Material(sh);
 				mat.color = diffuseFactor;
-				mat.SetColor("_SpecColor", specularFactor);
-				mat.SetFloat("_GlossyReflections", glossinessFactor);
+				if (mat.HasProperty("_SpecColor")) mat.SetColor("_SpecColor", specularFactor);
+				if (mat.HasProperty("_GlossyReflections")) mat.SetFloat("_GlossyReflections", glossinessFactor);
 
 				// Assign textures
 				if (textures != null) {
@@ -231,9 +238,11 @@ namespace Siccity.GLTFUtility {
 						} else {
 							IEnumerator en = textures[diffuseTexture.index].GetTextureCached(false, tex => {
 								if (tex != null) {
-									mat.SetTexture("_MainTex", tex);
+									if (mat.HasProperty("_MainTex")) mat.SetTexture("_MainTex", tex);
+									if (mat.HasProperty("_BaseColorMap")) mat.SetTexture("_BaseColorMap", tex);
 									if (diffuseTexture.extensions != null) {
-										diffuseTexture.extensions.Apply(diffuseTexture, mat, "_MainTex");
+										if (mat.HasProperty("_MainTex")) diffuseTexture.extensions.Apply(diffuseTexture, mat, "_MainTex");
+										if (mat.HasProperty("_BaseColorMap")) diffuseTexture.extensions.Apply(diffuseTexture, mat, "_BaseColorMap");
 									}
 								}
 							});
